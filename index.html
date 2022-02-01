@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="dist/reset.css">
+    <link rel="stylesheet" href="dist/reveal.css">
+    <link rel="stylesheet" href="dist/theme/solarized.css">
+	<link rel="stylesheet" href="plugin/highlight/monokai.css"> 
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Cedarville+Cursive&family=Josefin+Sans:ital@0;1&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="style.css">
+	<link rel="shortcut icon" href="./assets/favicon.ico" />
+    <title>MOBX vs REDUX</title>
+	</head>
+	<body>
+		<div class="reveal">
+      <div class="slides">
+				<section>Redux vs. MobX
+					<img data-src="./assets/Redux-vs-mobx.png" alt="Which better">	
+				</section>
+				<section>
+					<ol> <h2>Agenda:</h2>
+						<li class="fragment">What is React.js </li>
+						<li class="fragment">Virtual DOM</li>
+						<li class="fragment">The state problem and prop drilling</li>
+						<li class="fragment">Solving problem: REDUX and MOBX</li>
+						<li class="fragment">REDUX review</li>
+						<li class="fragment">MOBX review</li>
+						<li class="fragment">Redux vs. MobX: Which performs better?</li>
+						<li class="fragment">Conclusion</li>
+					</ol>
+				</section>
+				<section>
+					<section>
+						<img src="./assets/react.png" alt="">
+					</section>
+					<section>
+						<p>
+							ReactJS is an open-source, component-based front end library responsible only for the view layer of the application. It is maintained by Facebook.
+            </p>
+            <p>
+	            It designs simple views for each state in your application, and React will efficiently update and render just the right component when your data changes. The declarative view makes your code more predictable and easier to debug.
+            </p>
+          </section>
+					<section>
+						<p>A React application is made of multiple components, each responsible for rendering a small, reusable piece of HTML. Components can be nested within other  			 components to allow complex applications to be built out of simple building blocks. 
+						</p>
+						<p>
+							Note: React is not a framework. It is just a library developed by Facebook to solve some problems that we were facing earlier.
+						</p>
+				</section>
+				<section>
+					<p>
+						Prerequisites: Download Node packages with their latest version.
+					</p>
+					<p>Example: Create a new React project by using the command below:</p>
+					<pre><code data-trim data-noescape>
+						npx create-react-app myapp
+					</code></pre>	
+				</section>
+				</section>
+				<section>
+					<section><img src="./assets/virtual-dom.jpg" alt=""></section>
+					<section>
+						<p>In React, for every DOM object, there is a corresponding “virtual DOM object.” A virtual DOM object is a representation of a DOM object, like a lightweight copy.
+							The Virtual DOM is an abstraction of the HTML DOM.  Since the DOM itself was already an abstraction, the virtual DOM is, in fact, an abstraction of an abstraction.
+							</p>
+						<img src="./assets/meme.jpg" alt="mem">
+
+					</section>
+				</section>
+				<section>
+					<section>
+						<p>For example, using props and state, we can put together a small Todo application. This example uses state to track the current list of items as well as the text that the user has entered. Although event handlers appear to be rendered inline, they will be collected and implemented using event delegation.</p>
+					</section>
+					<section data-markdown>
+						<textarea data-template data-line-numbers="3,8-10">
+							```
+							class TodoApp extends React.Component {
+								constructor(props) {
+									super(props);
+									this.state = { items: [], text: '' };
+									this.handleChange = this.handleChange.bind(this);
+									this.handleSubmit = this.handleSubmit.bind(this);
+								}
+							
+								render() {
+									return (
+										<div>
+											<h3>TODO</h3>
+											<TodoList items={this.state.items} />
+											<form onSubmit={this.handleSubmit}>
+												<label htmlFor="new-todo">
+													What needs to be done?
+												</label>
+												<input
+													id="new-todo"
+													onChange={this.handleChange}
+													value={this.state.text}
+												/>
+												<button>
+													Add #{this.state.items.length + 1}
+												</button>
+											</form>
+										</div>
+									);
+								}
+							
+								handleChange(e) {
+									this.setState({ text: e.target.value });
+								}
+							
+								handleSubmit(e) {
+									e.preventDefault();
+									if (this.state.text.length === 0) {
+										return;
+									}
+									const newItem = {
+										text: this.state.text,
+										id: Date.now()
+									};
+									this.setState(state => ({
+										items: state.items.concat(newItem),
+										text: ''
+									}));
+								}
+							}
+							class TodoList extends React.Component {
+								render() {
+									return (
+										<ul>
+											{this.props.items.map(item => (
+												<li key={item.id}>{item.text}</li>
+											))}
+										</ul>
+									);
+								}
+							}
+							
+							ReactDOM.render(
+								<TodoApp />,
+								document.getElementById('root')
+							);
+							```
+						</textarea>
+					</section>
+					<section>
+						<p>Props are the data we pass -or can access- from the top-level components to any number of child components on our website</p>
+						<img src="./assets/props.jpg" alt="props">
+					</section>
+					<section class= "drilling">
+						<img src="./assets/drilling.jpg" alt="drilling">
+						<p>The Props Drilling (Threading) is a concept that refers to the process you pass the data from the parent component to the exact child Component,</p>
+					</section>
+					<section>
+						<p>BUT in between, other components owning the props just to pass it down the chain</p>
+						<p>
+							Prop Drilling is an anti-pattern in which props are passed through intermediate components that do not use the received props, but only pass them to the next components.
+						</p>
+					</section>
+					<section>
+						<p class="anti-pattern">Prop-Drilling Bad</p>
+					</section>
+				</section>
+				<section>
+					<section>
+						<img src="./assets/flux.png" alt="flux">
+					</section>
+				</section>
+				<section>
+					<section>
+						<p>
+						The reason for the popularity of redux, among other things, was that react-redux solved the problem of prop drilling. Redux made it possible to exchange data between different parts of the component tree, simply by passing a component to the magical connect function. 
+						</p>
+					</section>
+					<section>
+						<h4>Three Principles</h4>
+						<p>1.A single source of truth.
+							The state of your entire application is stored in an object tree within a single repository</p>
+						<p>2.The only way to change state is to apply an action - an object that describes what will happen.</p>
+						<p>3. To determine how the state tree will be transformed by actions, you write pure redusers.</p>
+					</section>
+					<section>
+						<h4>Create a React Redux App</h4>
+						<p>The recommended way to start new apps with React and Redux is by using the official Redux+JS template or Redux+TS template for Create React App</p>
+					</section>
+					<section>
+						<pre><code data-trim data-noescape>
+							# Redux + Plain JS template
+							npx create-react-app my-app --template redux
+							# Redux + TypeScript template
+							npx create-react-app my-app --template redux-typescript		
+						</code></pre>
+					</section>
+					<section>
+						<p>
+							The Redux core library is available as a package on NPM for use with a module bundler or in a Node application:
+						</p>
+						<pre><code data-trim data-noescape>
+							# NPM
+							npm install redux
+
+							# Yarn
+							yarn add redux				
+						</code></pre>	
+					</section>
+					<section>
+						<pre><code data-trim data-noescape>
+							import React from "react";
+							import ReactDOM from "react-dom";
+ 
+							import { Provider } from "react-redux";
+							import store from "./redux/store";
+							
+							import TodoApp from "./TodoApp";
+							
+							const rootElement = document.getElementById("root");
+							ReactDOM.render(
+							<Provider store={store}>
+								<TodoApp />
+							</Provider>,
+							rootElement
+							);
+						</code></pre>
+					</section>
+				</section>
+				<section>
+					<section>
+						<p>MOBX installation</p>
+						<pre><code data-trim data-noescape>
+							npm install mobx-react --save
+						</code></pre>
+					</section>
+					<section>
+						<pre><code data-trim data-noescape>
+							
+							import { observer } from "mobx-react"
+
+							// ---- ES6 syntax ----
+							const TodoView = observer(
+    					class TodoView extends React.Component {
+        			render() {
+            		return <div>{this.props.todo.title}</div>
+        			}
+    				}
+					)
+						// ---- or just use function components: ----
+						const TodoView = observer(({ todo }) => <div>{todo.title}</div>)
+						</code></pre>
+					</section>
+				</section>
+				<section>
+					<table>
+					<th>
+						<tr>
+							<td>Criteria for comparison</td>
+							<td>REDUX</td>
+							<td>MOBX</td>
+						</tr>
+						</th>
+						<tr>
+							<td>Store</td>
+							<td>single</td>
+							<td>multiple</td>
+						</tr>
+						<tr>
+							<td>Data</td>
+							<td>plain</td>
+							<td>observable</td>
+						</tr>
+						<tr>
+							<td>States</td>
+							<td>immutable</td>
+							<td>mutable</td>
+						</tr>
+						<tr>
+							<td>Debugging</td>
+							<td>+</td>
+							<td>-</td>
+						</tr>
+						<tr>
+							<td>Developer support</td>
+							<td>+</td>
+							<td>-</td>
+						</tr>
+					</table>
+					
+				</section>
+				<section>
+				<ol>Ask yourself
+					<li>Is the application small and simple?
+						Choose MobX
+						</li>
+					<li>Prefer to build the app fast?
+						Choose MobX
+						</li>
+					<li>Large team looking for more maintainable code?
+						Choose Redux
+						</li>
+					<li>Complex app with scalable option?
+						Choose Redux
+						</li>
+					<li>Final and the most important question — Which one do you like?
+						Choose that.
+						</li>
+					</ol>
+				</section>
+		       
+      </div>
+    </div>
+	<script src="dist/reveal.js"></script>
+		<script src="plugin/notes/notes.js"></script>
+		<script src="plugin/markdown/markdown.js"></script>
+		<script src="plugin/highlight/highlight.js"></script>
+		<script>
+			// More info about initialization & config:
+			// - https://revealjs.com/initialization/
+			// - https://revealjs.com/config/
+			Reveal.initialize({
+				hash: true,
+
+				// Learn about plugins: https://revealjs.com/plugins/
+				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+			});
+		</script>
+   
+	</body>
+</html>
